@@ -609,7 +609,8 @@ export class FireGuild extends Guild {
         format: "png",
         size: 128,
         dynamic: true,
-      }) || "https://cdn.discordapp.com/embed/avatars/0.png";
+      }) ||
+      `https://cdn.discordapp.com/embed/avatars/${BigInt(this.id) % 5n}.png`;
     return {
       name: this.name,
       id: this.id,
@@ -617,7 +618,10 @@ export class FireGuild extends Guild {
       splash,
       vanity: `https://discover.inv.wtf/${this.id}`,
       members: this.memberCount,
-      featured: this.settings.get<boolean>("utils.featured", false),
+      featured: this.settings.get<boolean>(
+        "utils.featured",
+        this.features.includes("FEATURABLE")
+      ),
       shard: this.shardId,
       cluster: this.client.manager.id,
     };
@@ -950,8 +954,7 @@ export class FireGuild extends Guild {
 ${this.language.get("JOINED")} <t:${Math.floor(
       author.joinedTimestamp / 1000
     )}:R>
-${this.language.get("ROLES")}: 
-`;
+${this.language.get("ROLES")}: `;
     const roles = author.roles.cache
       .sort((one, two) => (one.position > two.position ? 1 : -1))
       .filter((role) => this.id != role.id)
